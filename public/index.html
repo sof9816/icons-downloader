@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Icon Downloader</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="container">
+      <h1>Icon Downloader</h1>
+
+      <div class="url-section" hidden="true">
+        <label for="baseUrl">Custom Search URL (optional):</label>
+        <input
+          type="text"
+          id="baseUrl"
+          class="url-input"
+          placeholder="https://example.com/search/icons/?q="
+        />
+        <p class="url-help">
+          Leave empty to use default:
+          https://thenounproject.com/search/icons/?q=
+        </p>
+      </div>
+
+      <div class="upload-section">
+        <div class="upload-box" id="dropZone">
+          <input type="file" id="fileInput" accept=".csv" hidden />
+          <div class="upload-content">
+            <img src="upload-icon.svg" alt="Upload" class="upload-icon" />
+            <p>
+              Drag & drop your CSV file here<br />or
+              <span class="browse-text">browse</span>
+            </p>
+          </div>
+        </div>
+        <p class="file-info" id="fileInfo"></p>
+      </div>
+
+      <div class="progress-section" id="progressSection" style="display: none">
+        <div class="progress-bar">
+          <div class="progress" id="progressBar"></div>
+        </div>
+        <p class="progress-text" id="progressText">Processing...</p>
+      </div>
+
+      <div class="result-section" id="resultSection" style="display: none">
+        <h3>Processing Complete!</h3>
+        <a href="#" id="downloadLink" class="download-button">Download Icons</a>
+        <div class="stats" id="stats"></div>
+      </div>
+
+      <div class="error-section" id="errorSection" style="display: none">
+        <h3>Errors</h3>
+        <ul id="errorList"></ul>
+      </div>
+
+      <button id="clearAll" class="clear-button">
+        Clear All Downloads & Uploads
+      </button>
+    </div>
+    <script src="script.js"></script>
+  </body>
+</html>
