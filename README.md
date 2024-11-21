@@ -1,6 +1,10 @@
 # Icon Downloader
 
-A web application that processes CSV files containing words and downloads relevant icons for each word. Built with Node.js and Express.
+A web application that processes CSV files containing words and downloads relevant icons for each word. Built with Node.js and Express, deployed on Vercel.
+
+## Live Demo
+
+Visit the live application at: [https://icons-downloader.vercel.app/](https://icons-downloader.vercel.app/)
 
 ## Features
 
@@ -12,6 +16,7 @@ A web application that processes CSV files containing words and downloads releva
 - Progress tracking and error handling
 - Responsive web interface
 - Drag and drop file upload
+- Serverless deployment on Vercel
 
 ## Prerequisites
 
@@ -31,19 +36,33 @@ cd IconDownloader
 npm install
 ```
 
-3. Start the server:
-```bash
-npm start
-```
-
-For development with auto-reload:
+3. For local development:
 ```bash
 npm run dev
 ```
 
+## Deployment
+
+This application is deployed on Vercel. To deploy your own instance:
+
+1. Install Vercel CLI:
+```bash
+npm install -g vercel
+```
+
+2. Login to Vercel:
+```bash
+vercel login
+```
+
+3. Deploy:
+```bash
+vercel
+```
+
 ## Usage
 
-1. Open your browser and navigate to `http://localhost:3000`
+1. Visit [https://icons-downloader.vercel.app/](https://icons-downloader.vercel.app/) or your local development server
 2. Upload a CSV file containing words (one word per column)
 3. The application will:
    - Process the CSV file
@@ -57,20 +76,22 @@ npm run dev
 
 ```
 IconDownloader/
+├── api/
+│   └── index.js        # Serverless API endpoint
 ├── public/
 │   ├── index.html
 │   ├── styles.css
 │   ├── script.js
 │   └── upload-icon.svg
-├── server.js
 ├── worker.js
+├── vercel.json         # Vercel configuration
 ├── package.json
 └── README.md
 ```
 
 ## API Endpoints
 
-- `POST /upload`: Accepts CSV file upload and returns download URL for the ZIP file
+- `POST /api/upload`: Accepts CSV file upload and returns download URL for the ZIP file
   - Request: multipart/form-data with 'file' field containing CSV
   - Response: JSON with download URL and processing statistics
 
