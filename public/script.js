@@ -13,6 +13,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const clearButton = document.getElementById('clearAll');
     const baseUrlInput = document.getElementById('baseUrl');
 
+    // Helper function to get API prefix based on environment
+    function getApiPrefix() {
+        // Check if running locally (localhost or 127.0.0.1)
+        const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+        return isLocal ? '' : '/api';
+    }
+
     // Handle drag and drop events
     ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
         dropZone.addEventListener(eventName, preventDefaults, false);
@@ -83,7 +90,7 @@ document.addEventListener('DOMContentLoaded', () => {
         clearErrors();
 
         try {
-            const response = await fetch('/upload', {
+            const response = await fetch(`${getApiPrefix()}/upload`, {
                 method: 'POST',
                 body: formData
             });
@@ -159,7 +166,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Handle clear all button
     clearButton.addEventListener('click', async () => {
         try {
-            const response = await fetch('/clear', {
+            const response = await fetch(`${getApiPrefix()}/clear`, {
                 method: 'POST'
             });
 
