@@ -105,26 +105,29 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
 
-            // Check if the response is a ZIP file
-            const contentType = response.headers.get('content-type');
-            if (contentType === 'application/zip') {
-                // Create a blob from the response
-                const blob = await response.blob();
-                // Create a download link
-                const url = window.URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = response.headers.get('content-disposition')?.split('filename=')[1] || 'icons.zip';
-                document.body.appendChild(a);
-                a.click();
-                window.URL.revokeObjectURL(url);
-                document.body.removeChild(a);
-                
-                // Show success UI
-                showSuccess();
-            } else {
-                throw new Error('Unexpected response format');
-            }
+            // Get the filename from the Content-Disposition header
+            const contentDisposition = response.headers.get('content-disposition');
+            const filename = contentDisposition
+                ? contentDisposition.split('filename=')[1]
+                : 'icons.zip';
+
+            // Create a blob from the response
+            const blob = await response.blob();
+            
+            // Create a download link and trigger download
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            
+            // Cleanup
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+
+            // Show success message
+            showSuccess();
         } catch (error) {
             showError('Upload failed: ' + error.message);
         }
@@ -193,7 +196,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 progressBar.style.width = '0%';
                 fileInput.value = '';
             } else {
-                showError(data.error);
+                showError(data.error || 'Clear operation failed');
             }
         } catch (error) {
             showError('Clear failed: ' + error.message);

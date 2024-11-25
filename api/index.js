@@ -6,6 +6,7 @@ const path = require('path');
 const { parse } = require('csv-parse');
 const archiver = require('archiver');
 const { Worker } = require('worker_threads');
+const { Readable } = require('stream');
 
 const app = express();
 
@@ -79,7 +80,7 @@ app.post('/api/upload', upload.fields([
         const uploadedFile = req.files.file[0];
         const words = await new Promise((resolve, reject) => {
             const results = [];
-            const bufferStream = require('stream').Readable.from(uploadedFile.buffer);
+            const bufferStream = Readable.from(uploadedFile.buffer);
             bufferStream
                 .pipe(parse({ 
                     delimiter: ',',
@@ -124,13 +125,14 @@ app.post('/api/upload', upload.fields([
             archive.finalize();
         });
 
-        // Read the zip file and send it as response
+        // Read the zip file
         const zipContent = fs.readFileSync(zipPath);
         
         // Cleanup
         fs.rmSync(downloadDir, { recursive: true });
         fs.rmSync(zipPath);
 
+        // Send response with ZIP file
         res.setHeader('Content-Type', 'application/zip');
         res.setHeader('Content-Disposition', `attachment; filename=icons-${Date.now()}.zip`);
         res.send(zipContent);
@@ -141,6 +143,16 @@ app.post('/api/upload', upload.fields([
     }
 });
 
-// Clear endpoint not needed for serverless
+// Clear endpoint for Vercel
+app.post('/api/clear', (req, res) => {
+    try {
+        // For Vercel, we don't need to actually clear files since we use memory storage
+        // Just return success response to maintain API compatibility
+        res.json({ success: true, message: 'All files cleared successfully' });
+    } catch (error) {
+        console.error('Error clearing files:', error);
+        res.status(500).json({ error: error.message });
+    }
+});
 
 module.exports = app;
