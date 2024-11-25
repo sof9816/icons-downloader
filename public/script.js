@@ -96,15 +96,34 @@ document.addEventListener('DOMContentLoaded', () => {
             });
 
             if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+                const errorData = await response.text();
+                try {
+                    const jsonError = JSON.parse(errorData);
+                    throw new Error(jsonError.error || 'Upload failed');
+                } catch (e) {
+                    throw new Error(errorData || 'Upload failed');
+                }
             }
 
-            const data = await response.json();
-            
-            if (data.success) {
-                showResult(data);
+            // Check if the response is a ZIP file
+            const contentType = response.headers.get('content-type');
+            if (contentType === 'application/zip') {
+                // Create a blob from the response
+                const blob = await response.blob();
+                // Create a download link
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = response.headers.get('content-disposition')?.split('filename=')[1] || 'icons.zip';
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                document.body.removeChild(a);
+                
+                // Show success UI
+                showSuccess();
             } else {
-                showError(data.error);
+                throw new Error('Unexpected response format');
             }
         } catch (error) {
             showError('Upload failed: ' + error.message);
@@ -129,22 +148,11 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 500);
     }
 
-    function showResult(data) {
+    function showSuccess() {
         progressBar.style.width = '100%';
         progressSection.style.display = 'none';
         resultSection.style.display = 'block';
-        
-        downloadLink.href = data.downloadUrl;
-        
-        // Display statistics
-        stats.innerHTML = `
-            <p>Total words processed: ${data.processedWords}</p>
-            ${data.errors.length ? `<p>Errors encountered: ${data.errors.length}</p>` : ''}
-        `;
-
-        if (data.errors.length > 0) {
-            showErrors(data.errors);
-        }
+        stats.innerHTML = '<p>Icons have been successfully downloaded!</p>';
     }
 
     function showError(message) {
